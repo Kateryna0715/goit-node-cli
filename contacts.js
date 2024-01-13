@@ -3,6 +3,7 @@ const { nanoid } = require("nanoid");
 const fs = require("fs").promises;
 const path = require("path");
 const contactsPath = path.join("db", "contacts.json");
+require("colors");
 
 const listContacts = async () => {
   try {
@@ -20,23 +21,37 @@ const listContacts = async () => {
 const getContactById = async (contactId) => {
   const data = await listContacts();
   const contactById = data.find((contact) => contact.id === contactId);
-
-  return contactById || null;
+  if (!contactById) {
+    console.log(`Contact with id: ${contactId} doesn't exist`.red);
+    return null;
+  }
+  return contactById;
 };
 
 const removeContact = async (contactId) => {
   const data = await listContacts();
   const contactById = await getContactById(contactId);
 
-  if (contactById) {
-    const newList = data.filter((contact) => contact.id !== contactId);
+  const newList = data.filter((contact) => contact.id !== contactId);
 
-    await fs.writeFile(contactsPath, JSON.stringify(newList, null, 2));
-  }
+  await fs.writeFile(contactsPath, JSON.stringify(newList, null, 2));
+
   return contactById;
 };
 
 const addContact = async (name, email, phone) => {
+  const data = await listContacts();
+
+  const isExist = data.find((contact) => {
+    contact.email === email;
+  });
+
+  if (!isExist) {
+    console.log("Contact with this email is already exist!".red);
+
+    return null;
+  }
+
   const newContact = {
     id: nanoid(),
     name,
@@ -44,7 +59,6 @@ const addContact = async (name, email, phone) => {
     phone,
   };
 
-  const data = await listContacts();
   data.push(newContact);
 
   await fs.writeFile(contactsPath, JSON.stringify(data, null, 2));
