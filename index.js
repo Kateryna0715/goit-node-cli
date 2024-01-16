@@ -1,5 +1,3 @@
-//import { program } from "commander";
-
 const { program } = require("commander");
 
 program
@@ -30,19 +28,19 @@ async function invokeAction({ action, id, name, email, phone }) {
 
     case "get":
       const contactById = await getContactById(id);
-      console.table(contactById);
+      console.log(contactById);
 
       break;
 
     case "add":
       const newContact = await addContact(name, email, phone);
-      console.table(newContact);
+      console.log(newContact);
 
       break;
 
     case "remove":
       const removedContact = await removeContact(id);
-      console.table(removedContact);
+      console.log(removedContact);
 
       break;
 
